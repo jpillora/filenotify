@@ -112,7 +112,7 @@ func assertEvent(w FileWatcher, eType fsnotify.Op) error {
 		}
 	case e := <-w.Errors():
 		err = fmt.Errorf("got unexpected error waiting for events %v: %v", eType, e)
-	case <-time.After(watchWaitTime * 3):
+	case <-time.After(defaultPollInterval * 3):
 		err = fmt.Errorf("timeout waiting for event %v", eType)
 	}
 	return err

@@ -15,18 +15,19 @@ type FileWatcher interface {
 }
 
 // New tries to use an fs-event watcher, and falls back to the poller if there is an error
-func New() (FileWatcher, error) {
+func New() FileWatcher {
 	if watcher, err := NewEventWatcher(); err == nil {
-		return watcher, nil
+		return watcher
 	}
-	return NewPollingWatcher(), nil
+	return NewPollingWatcher()
 }
 
 // NewPollingWatcher returns a poll-based file watcher
 func NewPollingWatcher() FileWatcher {
 	return &filePoller{
-		events: make(chan fsnotify.Event),
-		errors: make(chan error),
+		events:       make(chan fsnotify.Event),
+		errors:       make(chan error),
+		pollInterval: defaultPollInterval,
 	}
 }
 

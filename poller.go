@@ -19,8 +19,18 @@ var (
 	errNoSuchWatch = errors.New("poller does not exist")
 )
 
-// watchWaitTime is the time to wait between file poll loops
-const watchWaitTime = 200 * time.Millisecond
+// defaultPollInterval is the time to wait between file poll loops
+const defaultPollInterval = 200 * time.Millisecond
+
+func SetPollInterval(w FileWatcher, d time.Duration) bool {
+	p, ok := w.(*filePoller)
+	if ok {
+		p.mu.Lock()
+		p.pollInterval = d
+		p.mu.Unlock()
+	}
+	return ok
+}
 
 // filePoller is used to poll files for changes, especially in cases where fsnotify
 // can't be run (e.g. when inotify handles are exhausted)
@@ -32,6 +42,8 @@ type filePoller struct {
 	events chan fsnotify.Event
 	// errors is the channel to listen to for watch errors
 	errors chan error
+	// poll interval
+	pollInterval time.Duration
 	// mu locks the poller for modification
 	mu sync.Mutex
 	// closed is used to specify when the poller has already closed
@@ -146,7 +158,10 @@ func (w *filePoller) sendErr(e error, chClose <-chan struct{}) error {
 func (w *filePoller) watch(f *os.File, lastFi os.FileInfo, chClose chan struct{}) {
 	defer f.Close()
 	for {
-		time.Sleep(watchWaitTime)
+		w.mu.Lock()
+		d := w.pollInterval
+		w.mu.Unlock()
+		time.Sleep(d)
 		select {
 		case <-chClose:
 			logrus.Debugf("watch for %s closed", f.Name())

@@ -1,5 +1,5 @@
 # filenotify
 
-Stand-alone repository for [Docker](https://github.com/docker/docker)'s [filenotify](https://github.com/docker/docker/tree/master/pkg/filenotify). Combines `fsnotify` with fallback to polling.
+[![GoDoc](https://godoc.org/github.com/jpillora/filenotify?status.svg)](https://godoc.org/github.com/jpillora/filenotify)
 
-> Package `filenotify` provides a mechanism for watching file(s) for changes. Generally leans on `fsnotify`, but provides a poll-based notifier which `fsnotify` does not support. These are wrapped up in a common interface so that either can be used interchangeably in your code.
+Forked, stand-alone repository for [Docker](https://github.com/docker/docker)'s [filenotify](https://github.com/docker/docker/tree/master/pkg/filenotify) package. Combines `fsnotify` with fallback to polling.
