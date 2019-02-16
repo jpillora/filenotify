@@ -3,11 +3,10 @@ package filenotify
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"sync"
 	"time"
-
-	"github.com/Sirupsen/logrus"
 
 	"gopkg.in/fsnotify.v1"
 )
@@ -164,7 +163,7 @@ func (w *filePoller) watch(f *os.File, lastFi os.FileInfo, chClose chan struct{}
 		time.Sleep(d)
 		select {
 		case <-chClose:
-			logrus.Debugf("watch for %s closed", f.Name())
+			log.Printf("watch for %s closed", f.Name())
 			return
 		default:
 		}
